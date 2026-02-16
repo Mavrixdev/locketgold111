@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locket Gold Unlocker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%);
+            --secondary-gradient: linear-gradient(135deg, #FF00CC 0%, #333399 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --text-color: #ffffff;
+            --text-secondary: #e0e0e0;
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --glow-color: rgba(0, 198, 255, 0.6);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #02020a;
+            color: var(--text-color);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Galactic Background */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            z-index: -2;
+        }
+
+        /* Remove old blobs to show particles clearly */
+        body::after {
+            display: none;
+        }
+
+        /* Subtle overlay for depth */
+        body {
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.05) 0%, rgba(0, 0, 0, 0) 60%);
+        }
+
+        /* Add a third blob via box-shadow on a hidden element or just another pseudo on a wrapper? 
+           Let's use a fixed background container instead for better control if needed, 
+           but actually we can use multiple radial gradients on body background itself 
+           PLUS the moving blobs. */
+        
+        body {
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.1) 0%, rgba(2, 2, 10, 1) 100%);
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            33% { transform: translate(30px, -50px) rotate(10deg) scale(1.1); }
+            66% { transform: translate(-20px, 20px) rotate(-5deg) scale(0.95); }
+            100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 1; /* Above background */
+        }
+
+        .container {
+            background: rgba(20, 20, 20, 0.6); /* Darker glass */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 2.5rem;
+            border-radius: 2rem;
+            border: var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle shine on container */
+        .container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: skewX(-20deg);
+            animation: shine 6s infinite; 
+            pointer-events: none;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 200%; } /* Fast pass */
+            100% { left: 200%; } /* Wait */
+        }
+
+        h1 {
+            background: linear-gradient(to right, #00C6FF, #0072FF);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 30px rgba(0, 198, 255, 0.3);
+        }
+
+        p.subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background-color: var(--input-bg);
+            border: var(--glass-border);
+            border-radius: 1rem;
+            color: #fff;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            backdrop-filter: blur(5px);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #00C6FF;
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 1.1rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 198, 255, 0.5);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #00C6FF;
+            box-shadow: 0 0 25px rgba(0, 198, 255, 0.5);
+            text-shadow: 0 0 15px rgba(0, 198, 255, 0.8);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            background: #444;
+        }
+
+        /* Instructions & Note Cards */
+        .instructions, .note {
+            background: rgba(30, 30, 30, 0.4);
+            border-radius: 1.2rem;
+            padding: 1.5rem;
+            border: var(--glass-border);
+            text-align: left;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .instructions h3, .note h3 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .instructions ol, .note ul {
+            padding-left: 1.2rem;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .instructions li, .note li {
+            margin-bottom: 0.5rem;
+        }
+
+        .note {
+            background: rgba(0, 198, 255, 0.05); /* Tinted blue */
+            border-color: rgba(0, 198, 255, 0.2);
+        }
+        
+        .note h3 {
+            color: #00C6FF;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            padding: 1.5rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            text-align: center;
+            width: 100%;
+            z-index: 1;
+        }
+
+        footer a {
+            color: #00C6FF;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px #00C6FF;
+        }
+        
+        /* Download Button */
+        .download-btn {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(5px);
+        }
+        
+        .download-btn:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Loader */
+        .loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* SweetAlert2 Theme Overrides */
+        div:where(.swal2-container) div:where(.swal2-popup) {
+            background: rgba(20, 20, 20, 0.85) !important;
+            backdrop-filter: blur(25px) !important;
+            -webkit-backdrop-filter: blur(25px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-radius: 1.5rem !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
+        }
+
+        div:where(.swal2-container) h2:where(.swal2-title) {
+            color: #fff !important;
+        }
+
+        div:where(.swal2-container) .swal2-html-container {
+            color: #ccc !important;
+        }
+        
+        .glass-confirm-btn {
+            background: var(--primary-gradient) !important;
+            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.4) !important;
+        }
+
+        /* Queue UI Updates */
+        .queue-position {
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3.5rem;
+            filter: drop-shadow(0 0 10px rgba(0, 198, 255, 0.3));
+        }
+
+        .queue-progress-bar {
+            background: var(--primary-gradient);
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.5);
+        }
+        
+        .queue-stat-value {
+            color: #00C6FF;
+            text-shadow: 0 0 10px rgba(0, 198, 255, 0.3);
+        }
+        
+        .user-avatar {
+             border: 2px solid #00C6FF;
+             box-shadow: 0 0 15px rgba(0, 198, 255, 0.4);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="particles-js" style="position: absolute; width: 100%; height: 100%; z-index: -1;"></div>
+    <div class="main-wrapper">
+        <div class="container">
+            <h1>Locket Gold - Mavrixdev </h1>
+            <p class="subtitle">Mở Khoá Gold Với Usename</p>
+
+            <div class="form-group">
+                <label for="username">Tên Người Dùng</label>
+                <input type="text" id="username" placeholder="Nhập Tên Người Dùng..." required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="password">Mật Khẩu</label>
+                <input type="text" id="password" placeholder="Nhập Mật Khẩu..." required autocomplete="off">
+            </div>
+
+            <button id="submitBtn" onclick="checkUserInfo()">
+                <span class="btn-text">Bắt Đầu Nâng Cấp</span>
+                <div class="loader" id="loader"></div>
+            </button>
+        </div>
+
+        <div class="instructions">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                Cách Dùng
+            </h3>
+            <ol>
+                <li>Mở ứng dụng Locket và tìm tên người dùng của bạn trong phần cài đặt.</li>
+                <li>Nhập tên người dùng chính xác của bạn vào trường ở trên.</li>
+                <li>Nhấp Vào <strong>Bắt Đầu</strong> Để Tiến Hành Lên Gold.</li>
+                <li>Xem lại thông tin và nhấp vào <strong>Tiếp Tục</strong> Để Mở Khoá Gold.</li>
+                <li><strong>Quan Trọng:</strong> Sau khi kích hoạt, bạn phải cài đặt cấu hình cấu hình bên dưới để chặn việc thu hồi.</li>
+                <li>Khởi động lại ứng dụng Locket của bạn để xem các thay đổi.</li>
+            </ol>
+            <div style="margin-top: 1rem; text-align: center;">
+                <a href="https://www.mediafire.com/file/tv62ueesnqejx1l/locket.mobileconfig/file" class="download-btn" target="_blank" style="
+                    display: inline-block;
+                    background: rgba(255, 255, 255, 0.1);
+                    color: #fff;
+                    padding: 0.8rem 1.5rem;
+                    border-radius: 0.75rem;
+                    text-decoration: none;
+                    font-weight: 600;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    transition: all 0.3s ease;
+                ">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="vertical-align: middle; margin-right: 8px;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Tải Cấu Hình LocketGold
+                </a>
+            </div>
+        </div>
+
+        <div class="note">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                    </path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                Lưu Ý
+            </h3>
+            <ul>
+                <li>Công cụ này hoàn toàn miễn phí.</li>
+                <li>Không lạm dụng hoặc spam yêu cầu.</li>
+                <li>Nếu gặp lỗi, vui lòng thử lại sau vài phút.</li>
+                <li>Gold có thể mất một lúc để hiển thị sau khi kích hoạt.</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        Created with ❤️ by <a href="https://mavrixdev.vercel.app/" target="_blank">Nguyễn Thạc Mậu</a>
+    </footer>
+
+    <!-- Particles JS -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#ffffff" },
+                "shape": {
+                    "type": "circle",
+                    "stroke": { "width": 0, "color": "#000000" },
+                    "polygon": { "nb_sides": 5 },
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": { "enable": false, "speed": 1, "opacity_min": 0.1, "sync": false }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": { "enable": false, "speed": 40, "size_min": 0.1, "sync": false }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ffffff",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": { "enable": false, "rotateX": 600, "rotateY": 1200 }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": { "enable": true, "mode": "repulse" },
+                    "onclick": { "enable": true, "mode": "push" },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": { "distance": 400, "line_linked": { "opacity": 1 } },
+                    "bubble": { "distance": 400, "size": 40, "duration": 2, "opacity": 8, "speed": 3 },
+                    "repulse": { "distance": 200, "duration": 0.4 },
+                    "push": { "particles_nb": 4 },
+                    "remove": { "particles_nb": 2 }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let currentUserData = null;
+
+        const swalGlassParams = {
+            background: 'transparent', // Handled by CSS
+            customClass: {
+                popup: 'glass-popup',
+                confirmButton: 'glass-confirm-btn',
+                cancelButton: 'glass-cancel-btn'
+            },
+            buttonsStyling: false
+        };
+
+        async function checkUserInfo() {
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            const btn = document.getElementById('submitBtn');
+            const loader = document.getElementById('loader');
+            const btnText = document.querySelector('.btn-text');
+
+            if (!username || !password) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Input',
+                    text: 'Vui lòng nhập đầy đủ Tên người dùng và Mật khẩu!',
+                    ...swalGlassParams,
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            // Loading state
+            btn.disabled = true;
+            loader.style.display = 'block';
+            btnText.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/get-user-info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username: username }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    currentUserData = data.data;
+                    showUserInfoConfirmation(data.data);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'User Not Found',
+                        text: data.msg || "Could not find user with this username",
+                        ...swalGlassParams,
+                        confirmButtonColor: undefined, // Override if needed or rely on class
+                        confirmButtonText: 'Close'
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Connection Error',
+                    text: 'Failed to connect to the server. Please check your internet.',
+                    ...swalGlassParams,
+                    confirmButtonText: 'Close'
+                });
+            } finally {
+                // Reset state
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.style.display = 'inline-block';
+            }
+        }
+
+        function showUserInfoConfirmation(userData) {
+            const fullName = `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || 'No name';
+            const avatarUrl = userData.profile_picture_url || 'https://play-lh.googleusercontent.com/eRZLg00mAQGayCrFjDBklPIpW3qFHcmUs8PUQA4z7hVe-cDKMcRqecVHONAIexJGJZM';
+
+            Swal.fire({
+                title: 'Thông Tin Người Dùng',
+                html: `
+                <div class="user-info-card">
+                    <div class="user-info-header">
+                        <img src="${avatarUrl}" alt="Avatar" class="user-avatar" onerror="this.src='https://play-lh.googleusercontent.com/eRZLg00mAQGayCrFjDBklPIpW3qFHcmUs8PUQA4z7hVe-cDKMcRqecVHONAIexJGJZM'">
+                        <div class="user-details">
+                            <div class="user-name">${fullName}</div>
+                            <div class="user-username">@${userData.username}</div>
+                        </div>
+                    </div>
+                    <div class="user-uid">UID: ${userData.uid}</div>
+                </div>
+                <p style="margin-top: 1rem; color: #a0a0a0; font-size: 0.9rem;">
+                    Bạn Muốn Nâng Cấp Gold Cho Tài Khoản Này?
+                </p>
+            `,
+                ...swalGlassParams,
+                showCancelButton: true,
+                confirmButtonText: 'Continue',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const password = document.getElementById('password').value.trim();
+                    restorePurchase(userData.username, password);
+                }
+            });
+        }
+
+        async function restorePurchase(username, password) {
+            try {
+                // Join queue
+                const response = await fetch('/api/restore', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username: username, password: password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Show queue status and start polling
+                    showQueueStatus(data.client_id, username);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.msg || "Failed to join queue",
+                        ...swalGlassParams,
+                        confirmButtonText: 'Close'
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Connection Error',
+                    text: 'Failed to connect to the server. Please check your internet.',
+                    ...swalGlassParams,
+                    confirmButtonText: 'Close'
+                });
+            }
+        }
+
+        let pollInterval = null;
+        let countdownInterval = null;
+        let currentEstimatedTime = 0;
+
+        function showQueueStatus(clientId, username) {
+            // Show initial queue modal
+            Swal.fire({
+                title: 'Trạng Thái',
+                html: `
+                    <div class="queue-status-container">
+                        <div class="queue-status-text">Đang Xếp Hàng...</div>
+                        <div class="queue-position" id="queuePosition">-</div>
+                        <div class="queue-progress">
+                            <div class="queue-progress-bar" id="queueProgressBar" style="width: 0%"></div>
+                        </div>
+                        <div class="queue-info">
+                            <div class="queue-stat">
+                                <div class="queue-stat-label">Tổng Người Đang Chờ</div>
+                                <div class="queue-stat-value" id="queueTotal">-</div>
+                            </div>
+                            <div class="queue-stat">
+                                <div class="queue-stat-label">Ước Tính..</div>
+                                <div class="queue-stat-value" id="queueTime">-</div>
+                            </div>
+                        </div>
+                        <div class="queue-status-text" id="queueStatusText">Hãy Kiên Nhẫn...</div>
+                    </div>
+                `,
+                ...swalGlassParams,
+                showConfirmButton: false,
+                showCancelButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            });
+
+            // Start polling
+            pollQueueStatus(clientId, username);
+        }
+
+        async function pollQueueStatus(clientId, username) {
+            try {
+                const response = await fetch('/api/queue/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ client_id: clientId }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    updateQueueUI(data, username);
+
+                    // Check if completed or error
+                    if (data.status === 'completed') {
+                        clearInterval(pollInterval);
+                        clearInterval(countdownInterval);
+                        showCompletedStatus(data);
+                    } else if (data.status === 'error') {
+                        clearInterval(pollInterval);
+                        clearInterval(countdownInterval);
+                        showErrorStatus(data);
+                    } else {
+                        // Continue polling
+                        pollInterval = setTimeout(() => pollQueueStatus(clientId, username), 1000);
+                    }
+                } else {
+                    clearInterval(pollInterval);
+                    clearInterval(countdownInterval);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.msg || 'Failed to get queue status',
+                        ...swalGlassParams,
+                        confirmButtonText: 'Close'
+                    });
+                }
+            } catch (error) {
+                console.error('Polling error:', error);
+                clearInterval(pollInterval);
+                clearInterval(countdownInterval);
+                // Retry after 2 seconds
+                pollInterval = setTimeout(() => pollQueueStatus(clientId, username), 2000);
+            }
+        }
+
+        function updateQueueUI(data, username) {
+            const positionEl = document.getElementById('queuePosition');
+            const totalEl = document.getElementById('queueTotal');
+            const timeEl = document.getElementById('queueTime');
+            const statusEl = document.getElementById('queueStatusText');
+            const progressBar = document.getElementById('queueProgressBar');
+
+            if (positionEl && totalEl && timeEl && statusEl && progressBar) {
+                // Update position
+                if (data.status === 'processing') {
+                    positionEl.textContent = 'Processing';
+                    statusEl.textContent = `Processing request for ${username}...`;
+                    progressBar.style.width = '90%';
+                } else if (data.position === 0) {
+                    positionEl.textContent = 'Next';
+                    statusEl.textContent = 'You are next in queue!';
+                    progressBar.style.width = '80%';
+                } else {
+                    positionEl.textContent = `#${data.position}`;
+                    statusEl.textContent = `Position ${data.position} of ${data.total_queue}`;
+
+                    // Calculate progress (inverse of position)
+                    const progress = data.total_queue > 0 ?
+                        Math.max(10, (1 - (data.position / (data.total_queue + 1))) * 70) : 10;
+                    progressBar.style.width = `${progress}%`;
+                }
+
+                // Update total
+                totalEl.textContent = data.total_queue;
+
+                // Update time and start countdown
+                currentEstimatedTime = data.estimated_time;
+                updateTimeDisplay();
+
+                // Clear existing countdown and start new one
+                clearInterval(countdownInterval);
+                if (currentEstimatedTime > 0) {
+                    countdownInterval = setInterval(() => {
+                        if (currentEstimatedTime > 0) {
+                            currentEstimatedTime--;
+                            updateTimeDisplay();
+                        }
+                    }, 1000);
+                }
+            }
+        }
+
+        function updateTimeDisplay() {
+            const timeEl = document.getElementById('queueTime');
+            if (timeEl) {
+                if (currentEstimatedTime === 0) {
+                    timeEl.textContent = 'Soon';
+                } else if (currentEstimatedTime < 60) {
+                    timeEl.textContent = `${currentEstimatedTime}s`;
+                } else {
+                    const minutes = Math.floor(currentEstimatedTime / 60);
+                    const seconds = currentEstimatedTime % 60;
+                    timeEl.textContent = `${minutes}m ${seconds}s`;
+                }
+            }
+        }
+
+        function showCompletedStatus(data) {
+            if (data.result && data.result.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: data.result.msg,
+                    ...swalGlassParams,
+                    confirmButtonText: 'Cool!'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed',
+                    text: 'Request completed but failed',
+                    ...swalGlassParams,
+                    confirmButtonText: 'Close'
+                });
+            }
+        }
+
+        function showErrorStatus(data) {
+            let errorMsg = data.error || 'An error occurred while processing your request';
+            let formattedMsg = errorMsg;
+            let title = 'Error';
+            let icon = 'error';
+
+            // Handle 529 Error
+            if (errorMsg.includes('529') || errorMsg.includes('7746')) {
+                title = 'Server Busy';
+                formattedMsg = 'Máy chủ Locket đang bận xử lý dữ liệu. Vui lòng thử lại sau vài giây!';
+                icon = 'warning';
+            }
+
+            Swal.fire({
+                icon: icon,
+                title: title,
+                text: formattedMsg,
+                ...swalGlassParams,
+                confirmButtonText: 'Try Again'
+            });
+        }
+
+        // Allow pressing Enter to submit
+        document.getElementById("username").addEventListener("keyup", function (event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                document.getElementById("submitBtn").click();
+            }
+        });
+
+        // Initial Notification
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                icon: 'info',
+                title: 'Lưu Ý Quan Trọng',
+                html: 'Vui lòng đọc kỹ <b>Cách Dùng</b> và <b>Lưu Ý</b> ở bên dưới trước khi bắt đầu để đảm bảo thành công!',
+                ...swalGlassParams,
+                confirmButtonText: 'Đã Hiểu'
+            });
+        });
+    </script>
+</body>
+
+</html>
