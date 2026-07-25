@@ -170,9 +170,10 @@ class LocketAPI:
             "X-Is-Debug-Build": "false",
             "baggage": "sentry-environment=production,sentry-public_key=78fa64317f434fd89d9cc728dd168f50,sentry-release=com.locket.Locket%402.32.2%2B3,sentry-trace_id=4d1f7844ced746939e1ab8beea1590a8",
         }
-        # Auto-retry logic for network instability / timeouts
+        # Auto-retry logic for network instability / timeouts / RevenueCat token ingestion (7746 / 529)
         last_exception = None
-        for attempt in range(1, 4):
+        max_attempts = 5
+        for attempt in range(1, max_attempts + 1):
             try:
                 response = requests.post(url, headers=headers, data=payload, timeout=30)
                 if response.ok:
@@ -180,18 +181,37 @@ class LocketAPI:
                         return response.json()
                     except Exception:
                         raise Exception("Phản hồi từ RevenueCat không đúng định dạng JSON.")
-                else:
-                    raise Exception(
-                        f"API RevenueCat thất bại với mã {response.status_code}: {response.text or 'Không phản hồi'}"
+
+                resp_text = response.text or ""
+                # RevenueCat Error 7746 / HTTP 529: "This fetch token is currently being ingested..."
+                is_ingesting_or_temporary = (
+                    response.status_code in [429, 500, 502, 503, 504, 529]
+                    or "7746" in resp_text
+                    or "currently being ingested" in resp_text
+                )
+
+                if is_ingesting_or_temporary and attempt < max_attempts:
+                    print(
+                        f"Lần thử {attempt}/{max_attempts}: RevenueCat đang xử lý/bận (Mã {response.status_code}). "
+                        f"Tự động thử lại sau 2 giây..."
                     )
+                    time.sleep(2)
+                    continue
+
+                raise Exception(
+                    f"API RevenueCat thất bại với mã {response.status_code}: {resp_text or 'Không phản hồi'}"
+                )
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
                 last_exception = e
-                print(f"Lần thử {attempt}/3 đến RevenueCat bị timeout/lỗi mạng. Đang thử lại...")
-                time.sleep(1)
+                if attempt < max_attempts:
+                    print(f"Lần thử {attempt}/{max_attempts} đến RevenueCat bị timeout/lỗi mạng. Đang thử lại...")
+                    time.sleep(2)
+                else:
+                    raise Exception(f"Máy chủ RevenueCat bị nghẽn mạng sau {max_attempts} lần thử: {str(e)}")
             except Exception as e:
                 raise e
 
-        raise Exception(f"Máy chủ RevenueCat bị nghẽn mạng sau 3 lần thử: {str(last_exception)}")
+        raise Exception(f"Máy chủ RevenueCat tạm thời quá tải/đang xử lý sau {max_attempts} lần thử. Vui lòng thử lại sau giây lát.")
 
     def changeNameAccount(self, last="", first=""):
         """Changes the first and last name of the account.
