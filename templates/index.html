@@ -359,6 +359,63 @@
              box-shadow: 0 0 15px rgba(0, 198, 255, 0.4);
         }
 
+        /* High-Tech Cyber Additions */
+        .server-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 198, 255, 0.1);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #00C6FF;
+            margin-bottom: 15px;
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.2);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00ff88;
+            animation: pulse-green 1.5s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 255, 136, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+        }
+
+        .cyber-console {
+            display: none;
+            background: rgba(5, 10, 25, 0.95);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 0.75rem;
+            padding: 12px;
+            margin-top: 15px;
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.78rem;
+            color: #00ff88;
+            max-height: 120px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .cyber-console .log-line {
+            margin: 3px 0;
+            line-height: 1.3;
+        }
+
+        .cyber-console .log-time {
+            color: #777;
+            margin-right: 6px;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 480px) {
             .container {
@@ -375,8 +432,13 @@
     <div id="particles-js" style="position: absolute; width: 100%; height: 100%; z-index: -1;"></div>
     <div class="main-wrapper">
         <div class="container">
+            <div class="server-status" id="serverStatus">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Cryptographic Kernel: Online | Latency: checking...</span>
+            </div>
+
             <h1>Locket Gold - Mavrixdev </h1>
-            <p class="subtitle">Mở Khoá Gold Với Usename</p>
+            <p class="subtitle">Mở Khoá Gold Với Username</p>
 
             <div class="form-group">
                 <label for="username">Tên Người Dùng</label>
@@ -391,6 +453,11 @@
                 <span class="btn-text">Bắt Đầu Nâng Cấp</span>
                 <div class="loader" id="loader"></div>
             </button>
+
+            <!-- Cyber Console -->
+            <div class="cyber-console" id="cyberConsole">
+                <div class="log-line"><span class="log-time">[SYSTEM]</span> Mavrixdev Trust Engine initialized.</div>
+            </div>
         </div>
 
         <div class="instructions">
@@ -412,7 +479,7 @@
                 <li>Khởi động lại ứng dụng Locket của bạn để xem các thay đổi.</li>
             </ol>
             <div style="margin-top: 1rem; text-align: center;">
-                <a href="https://www.mediafire.com/file/tv62ueesnqejx1l/locket.mobileconfig/file" class="download-btn" target="_blank" style="
+                <a href="/download/mobileconfig" class="download-btn" target="_blank" style="
                     display: inline-block;
                     background: rgba(255, 255, 255, 0.1);
                     color: #fff;
@@ -456,7 +523,7 @@
     </div>
 
     <footer>
-        Created with ❤️ by <a href="https://mavrixdev.vercel.app/" target="_blank">Nguyễn Thạc Mậu</a>
+        Bản quyền thuộc sở hữu bởi <a href="https://www.facebook.com/ntmdz08" target="_blank">Mavrixdev</a> | Liên hệ: <a href="tel:0935877156">0935877156</a>
     </footer>
 
     <!-- Particles JS -->
@@ -523,6 +590,44 @@
     <script>
         let currentUserData = null;
 
+        function addCyberLog(msg) {
+            const consoleEl = document.getElementById('cyberConsole');
+            if (consoleEl) {
+                consoleEl.style.display = 'block';
+                const timeStr = new Date().toLocaleTimeString();
+                const div = document.createElement('div');
+                div.className = 'log-line';
+                div.innerHTML = `<span class="log-time">[${timeStr}]</span> ${msg}`;
+                consoleEl.appendChild(div);
+                consoleEl.scrollTop = consoleEl.scrollHeight;
+            }
+        }
+
+        async function updateServerStatus() {
+            const startTime = performance.now();
+            try {
+                const res = await fetch('/api/ping');
+                const endTime = performance.now();
+                const latency = Math.round(endTime - startTime);
+                const data = await res.json();
+                
+                const statusText = document.getElementById('statusText');
+                if (statusText) {
+                    statusText.innerText = `Kernel Engine: Active | Latency: ${latency}ms`;
+                }
+            } catch (err) {
+                const statusText = document.getElementById('statusText');
+                if (statusText) {
+                    statusText.innerText = `Kernel Engine: Offline`;
+                }
+                const dot = document.getElementById('statusDot');
+                if (dot) dot.style.backgroundColor = '#ff0055';
+            }
+        }
+
+        setInterval(updateServerStatus, 10000);
+        updateServerStatus();
+
         const swalGlassParams = {
             background: 'transparent', // Handled by CSS
             customClass: {
@@ -558,6 +663,8 @@
             loader.style.display = 'block';
             btnText.style.display = 'none';
 
+            addCyberLog(`Tra cứu người dùng: <strong>@${username}</strong>...`);
+
             try {
                 const response = await fetch('/api/get-user-info', {
                     method: 'POST',
@@ -571,14 +678,15 @@
 
                 if (response.ok && data.success) {
                     currentUserData = data.data;
+                    addCyberLog(`Đã tìm thấy UID: <span style="color:#00C6FF;">${data.data.uid}</span>`);
                     showUserInfoConfirmation(data.data);
                 } else {
+                    addCyberLog(`<span style="color:#ff4444;">Tra cứu thất bại: ${data.msg || 'User not found'}</span>`);
                     Swal.fire({
                         icon: 'error',
                         title: 'User Not Found',
                         text: data.msg || "Could not find user with this username",
                         ...swalGlassParams,
-                        confirmButtonColor: undefined, // Override if needed or rely on class
                         confirmButtonText: 'Close'
                     });
                 }
@@ -634,7 +742,21 @@
 
         async function restorePurchase(username, password) {
             try {
-                // Join queue
+                addCyberLog(`Khởi tạo yêu cầu nâng cấp Gold cho <strong>@${username}</strong>...`);
+                addCyberLog(`Gửi chứng thư giao dịch đến RevenueCat Proxy...`);
+                // Show loading modal
+                Swal.fire({
+                    title: 'Đang Xử Lý...',
+                    html: `Hệ thống đang tiến hành nâng cấp Gold cho tài khoản <b>${username}</b>. Vui lòng không đóng trình duyệt.`,
+                    ...swalGlassParams,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 const response = await fetch('/api/restore', {
                     method: 'POST',
                     headers: {
@@ -646,175 +768,16 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    // Show queue status and start polling
-                    showQueueStatus(data.client_id, username);
+                    addCyberLog(`<span style="color:#00ff88; font-weight:bold;">✅ KÍCH HOẠT THÀNH CÔNG: Gói Gold Premium đã được kích hoạt!</span>`);
+                    showCompletedStatus({ result: { success: true, msg: data.msg } });
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: data.msg || "Failed to join queue",
-                        ...swalGlassParams,
-                        confirmButtonText: 'Close'
-                    });
+                    addCyberLog(`<span style="color:#ff4444;">❌ LỖI: ${data.msg || 'Không thể khôi phục giao dịch.'}</span>`);
+                    showErrorStatus({ error: data.msg || 'Không thể khôi phục giao dịch.' });
                 }
             } catch (error) {
+                addCyberLog(`<span style="color:#ff4444;">❌ LỖI KẾT NỐI: ${error.message}</span>`);
                 console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Connection Error',
-                    text: 'Failed to connect to the server. Please check your internet.',
-                    ...swalGlassParams,
-                    confirmButtonText: 'Close'
-                });
-            }
-        }
-
-        let pollInterval = null;
-        let countdownInterval = null;
-        let currentEstimatedTime = 0;
-
-        function showQueueStatus(clientId, username) {
-            // Show initial queue modal
-            Swal.fire({
-                title: 'Trạng Thái',
-                html: `
-                    <div class="queue-status-container">
-                        <div class="queue-status-text">Đang Xếp Hàng...</div>
-                        <div class="queue-position" id="queuePosition">-</div>
-                        <div class="queue-progress">
-                            <div class="queue-progress-bar" id="queueProgressBar" style="width: 0%"></div>
-                        </div>
-                        <div class="queue-info">
-                            <div class="queue-stat">
-                                <div class="queue-stat-label">Tổng Người Đang Chờ</div>
-                                <div class="queue-stat-value" id="queueTotal">-</div>
-                            </div>
-                            <div class="queue-stat">
-                                <div class="queue-stat-label">Ước Tính..</div>
-                                <div class="queue-stat-value" id="queueTime">-</div>
-                            </div>
-                        </div>
-                        <div class="queue-status-text" id="queueStatusText">Hãy Kiên Nhẫn...</div>
-                    </div>
-                `,
-                ...swalGlassParams,
-                showConfirmButton: false,
-                showCancelButton: false,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-            });
-
-            // Start polling
-            pollQueueStatus(clientId, username);
-        }
-
-        async function pollQueueStatus(clientId, username) {
-            try {
-                const response = await fetch('/api/queue/status', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ client_id: clientId }),
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    updateQueueUI(data, username);
-
-                    // Check if completed or error
-                    if (data.status === 'completed') {
-                        clearInterval(pollInterval);
-                        clearInterval(countdownInterval);
-                        showCompletedStatus(data);
-                    } else if (data.status === 'error') {
-                        clearInterval(pollInterval);
-                        clearInterval(countdownInterval);
-                        showErrorStatus(data);
-                    } else {
-                        // Continue polling
-                        pollInterval = setTimeout(() => pollQueueStatus(clientId, username), 1000);
-                    }
-                } else {
-                    clearInterval(pollInterval);
-                    clearInterval(countdownInterval);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: data.msg || 'Failed to get queue status',
-                        ...swalGlassParams,
-                        confirmButtonText: 'Close'
-                    });
-                }
-            } catch (error) {
-                console.error('Polling error:', error);
-                clearInterval(pollInterval);
-                clearInterval(countdownInterval);
-                // Retry after 2 seconds
-                pollInterval = setTimeout(() => pollQueueStatus(clientId, username), 2000);
-            }
-        }
-
-        function updateQueueUI(data, username) {
-            const positionEl = document.getElementById('queuePosition');
-            const totalEl = document.getElementById('queueTotal');
-            const timeEl = document.getElementById('queueTime');
-            const statusEl = document.getElementById('queueStatusText');
-            const progressBar = document.getElementById('queueProgressBar');
-
-            if (positionEl && totalEl && timeEl && statusEl && progressBar) {
-                // Update position
-                if (data.status === 'processing') {
-                    positionEl.textContent = 'Processing';
-                    statusEl.textContent = `Processing request for ${username}...`;
-                    progressBar.style.width = '90%';
-                } else if (data.position === 0) {
-                    positionEl.textContent = 'Next';
-                    statusEl.textContent = 'You are next in queue!';
-                    progressBar.style.width = '80%';
-                } else {
-                    positionEl.textContent = `#${data.position}`;
-                    statusEl.textContent = `Position ${data.position} of ${data.total_queue}`;
-
-                    // Calculate progress (inverse of position)
-                    const progress = data.total_queue > 0 ?
-                        Math.max(10, (1 - (data.position / (data.total_queue + 1))) * 70) : 10;
-                    progressBar.style.width = `${progress}%`;
-                }
-
-                // Update total
-                totalEl.textContent = data.total_queue;
-
-                // Update time and start countdown
-                currentEstimatedTime = data.estimated_time;
-                updateTimeDisplay();
-
-                // Clear existing countdown and start new one
-                clearInterval(countdownInterval);
-                if (currentEstimatedTime > 0) {
-                    countdownInterval = setInterval(() => {
-                        if (currentEstimatedTime > 0) {
-                            currentEstimatedTime--;
-                            updateTimeDisplay();
-                        }
-                    }, 1000);
-                }
-            }
-        }
-
-        function updateTimeDisplay() {
-            const timeEl = document.getElementById('queueTime');
-            if (timeEl) {
-                if (currentEstimatedTime === 0) {
-                    timeEl.textContent = 'Soon';
-                } else if (currentEstimatedTime < 60) {
-                    timeEl.textContent = `${currentEstimatedTime}s`;
-                } else {
-                    const minutes = Math.floor(currentEstimatedTime / 60);
-                    const seconds = currentEstimatedTime % 60;
-                    timeEl.textContent = `${minutes}m ${seconds}s`;
-                }
+                showErrorStatus({ error: error.message || 'Lỗi kết nối đến máy chủ.' });
             }
         }
 

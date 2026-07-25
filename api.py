@@ -42,6 +42,12 @@ class LocketAPI:
         if response.ok:
             return response.json()
         else:
+            if response.status_code in [401, 403]:
+                raise Exception(
+                    f"API request failed with status code {response.status_code}. "
+                    "Yêu cầu thất bại có thể do AppCheck Token (X-Firebase-AppCheck) đã hết hạn hoặc không hợp lệ. "
+                    f"Chi tiết phản hồi: {response.text}"
+                )
             raise Exception(
                 f"API request failed with status code {response.status_code}: {response.text}"
             )
@@ -164,14 +170,28 @@ class LocketAPI:
             "X-Is-Debug-Build": "false",
             "baggage": "sentry-environment=production,sentry-public_key=78fa64317f434fd89d9cc728dd168f50,sentry-release=com.locket.Locket%402.32.2%2B3,sentry-trace_id=4d1f7844ced746939e1ab8beea1590a8",
         }
-        response = requests.post(url, headers=headers, data=payload)
-        print(response.json())
-        if response.ok:
-            return response.json()
-        else:
-            raise Exception(
-                f"API request failed with status code {response.status_code}: {response.text}"
-            )
+        # Auto-retry logic for network instability / timeouts
+        last_exception = None
+        for attempt in range(1, 4):
+            try:
+                response = requests.post(url, headers=headers, data=payload, timeout=30)
+                if response.ok:
+                    try:
+                        return response.json()
+                    except Exception:
+                        raise Exception("Phản hồi từ RevenueCat không đúng định dạng JSON.")
+                else:
+                    raise Exception(
+                        f"API RevenueCat thất bại với mã {response.status_code}: {response.text or 'Không phản hồi'}"
+                    )
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+                last_exception = e
+                print(f"Lần thử {attempt}/3 đến RevenueCat bị timeout/lỗi mạng. Đang thử lại...")
+                time.sleep(1)
+            except Exception as e:
+                raise e
+
+        raise Exception(f"Máy chủ RevenueCat bị nghẽn mạng sau 3 lần thử: {str(last_exception)}")
 
     def changeNameAccount(self, last="", first=""):
         """Changes the first and last name of the account.
@@ -202,6 +222,12 @@ class LocketAPI:
         if response.ok:
             return response.json()
         else:
+            if response.status_code in [401, 403]:
+                raise Exception(
+                    f"API request failed with status code {response.status_code}. "
+                    "Yêu cầu thất bại có thể do AppCheck Token (X-Firebase-AppCheck) đã hết hạn hoặc không hợp lệ. "
+                    f"Chi tiết phản hồi: {response.text}"
+                )
             raise Exception(
                 f"API request failed with status code {response.status_code}: {response.text}"
             )
@@ -264,6 +290,12 @@ class LocketAPI:
         if response.ok:
             return response.json()
         else:
+            if response.status_code in [401, 403]:
+                raise Exception(
+                    f"API request failed with status code {response.status_code}. "
+                    "Yêu cầu thất bại có thể do AppCheck Token (X-Firebase-AppCheck) đã hết hạn hoặc không hợp lệ. "
+                    f"Chi tiết phản hồi: {response.text}"
+                )
             raise Exception(
                 f"API request failed with status code {response.status_code}: {response.text}"
             )

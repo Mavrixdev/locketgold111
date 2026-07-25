@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+
+        <!-- ① Install custom CA cert so iOS trusts our fake RC server TLS -->
+        <dict>
+            <key>PayloadCertificateFileName</key>
+            <string>Mavrixdev-LocketGold-CA.crt</string>
+            <key>PayloadContent</key>
+            <data>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURaekNDQWsrZ0F3SUJBZ0lVQThpcHVvbFpSRnhXRVpwNXIyUWVvY0dyL2c4d0RRWUpLb1pJaHZjTkFRRUwKQlFBd1F6RWdNQjRHQTFVRUF3d1hUV0YyY21sNFpHVjJMVXh2WTJ0bGRFZHZiR1F0UTBFeEVqQVFCZ05WQkFvTQpDVTFoZG5KcGVHUmxkakVMTUFrR0ExVUVCaE1DVms0d0hoY05Nall3TnpJMU1UVXdNek0xV2hjTk16WXdOekl5Ck1UVXdNek0xV2pCRE1TQXdIZ1lEVlFRRERCZE5ZWFp5YVhoa1pYWXRURzlqYTJWMFIyOXNaQzFEUVRFU01CQUcKQTFVRUNnd0pUV0YyY21sNFpHVjJNUXN3Q1FZRFZRUUdFd0pXVGpDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRApnZ0VQQURDQ0FRb0NnZ0VCQUtKMFVBSjZaZjlRRkVPaW1NV0cyUzVkZkNTbGpobCs4b3FYcGd1Z3ZIRDUrUERNCjZVQzNLQnBLS1VyWE9kTENUclBPbXowVGU5YUZxTnF2bzFKUTE3K3k4bVFZczJKakpVZVJndkpwMEhkSFhXY04KSkxYcXNOa1BtN09BOGZOK3MyblF5RXQ0bHIrRUk3Sk8xVDlGVGxzaDlaN3JSbkRaSWpvMGdYN3owVmg4UFZYRApwZUJKM2tUd0R4d2wzL1dSUlhLV1UrTEdwQm1DcXIyM0MxZHBaSDZKc0lsSlNwYVBnbW9aUUFWSjhhV0hoL1dpCldXQVdDc1Y0Kzl3K1d2OW5RNlpjREpORmdtSEx0WjhCZWxmMFRneFNpUWtTbGJlKzJmcjFaR1RweWgvRTVMekYKKzdzcmFHSlp0VmxiUGJlN1RJQjlrMmFRZU1SQytXdndGYzZlTXYwQ0F3RUFBYU5UTUZFd0R3WURWUjBUQVFILwpCQVV3QXdFQi96QWRCZ05WSFE0RUZnUVVsWkNBcjViYzdGODJJc2xWQ1JYUWRuSnBuZFF3SHdZRFZSMGpCQmd3CkZvQVVsWkNBcjViYzdGODJJc2xWQ1JYUWRuSnBuZFF3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCQUFBVUc2aEEKdDQ2Y0VVc1BLQlRSbnFiUWMrakV5VUMwekV4OExiUFNPeCtXSi83M3p1enowRGNWK0I0Q3o0RFZkYWE2UEd3cApYVGhON250SG9jZGFyTmk4TmRRdG9FbEFORkl0RVRUbkplZXI5RWt0VFNOWlBXbzd0ZlBLdmRQNXE4Mm4vWnNGCnUybC8xeVpvSDVMSEdFMElCWTcrb1FpUG1leXdtRDNpdC9oa0Nmb2U3Z2dNNmJNYm1FdXF4UWRZZit0K0FHK0oKYS9hQ0c5dWpDWGFtdFlLcmRYSW1nbDk2L1gyV2lnTlphVlgzWTh1eG5iWXNkMURPditvUDlpVHhyWHBVMmV0WQp0T0pucWRXWVhGSVZiVlFjUmJrUkhqdnZFY044UnFMRHdaY09EbFBtTkozUm5NeVF6VXlJYkpPRkhyWU1JcWlUClpGZnVDcE5LZFBtWEw5UT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=</data>
+            <key>PayloadDescription</key>
+            <string>LocketGold Cryptographic Trust Kernel (Mavrixdev)</string>
+            <key>PayloadDisplayName</key>
+            <string>LocketGold Secure Trust Authority</string>
+            <key>PayloadIdentifier</key>
+            <string>com.locketgold.ca.cert</string>
+            <key>PayloadType</key>
+            <string>com.apple.security.root</string>
+            <key>PayloadUUID</key>
+            <string>EBD8390A-24B6-431E-B048-17224CD02090</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+        </dict>
+
+        <!-- ② DNS over TLS — point to NextDNS profile that rewrites api.revenuecat.com -->
+        <!-- User must add ONE rewrite rule in NextDNS dashboard (instructions below) -->
+        <dict>
+            <key>DNSSettings</key>
+            <dict>
+                <key>DNSProtocol</key>
+                <string>TLS</string>
+                <key>ServerAddresses</key>
+                <array>
+                    <!-- Replace with YOUR NextDNS ID addresses -->
+                    <string>45.90.28.0</string>
+                    <string>45.90.30.0</string>
+                </array>
+                <key>ServerName</key>
+                <!-- Replace YOUR_NEXTDNS_ID with your actual NextDNS profile ID -->
+                <string>YOUR_NEXTDNS_ID.dns.nextdns.io</string>
+            </dict>
+            <key>PayloadDescription</key>
+            <string>LocketGold Premium Bypass Engine (Mavrixdev)</string>
+            <key>PayloadDisplayName</key>
+            <string>LocketGold Elite DNS Router</string>
+            <key>PayloadIdentifier</key>
+            <string>com.locketgold.dns</string>
+            <key>PayloadType</key>
+            <string>com.apple.dnsSettings.managed</string>
+            <key>PayloadUUID</key>
+            <string>EF397645-A665-4DC1-A426-C805CD4FC19E</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+        </dict>
+
+    </array>
+    <key>PayloadDescription</key>
+    <string>LocketGold Elite Suite — Zero VPN overhead. Engineered by Mavrixdev (Hotline: 0935877156 - FB: facebook.com/ntmdz08)</string>
+    <key>PayloadDisplayName</key>
+    <string>LocketGold Elite Edition (Mavrixdev)</string>
+    <key>PayloadIdentifier</key>
+    <string>com.locketgold.novpn</string>
+    <key>PayloadRemovalDisallowed</key>
+    <false/>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>67BB6BED-D367-4B51-8BB9-050A3A08326C</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+</dict>
+</plist>
