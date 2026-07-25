@@ -172,7 +172,7 @@ class LocketAPI:
         }
         # Auto-retry logic for network instability / timeouts / RevenueCat token ingestion (7746 / 529)
         last_exception = None
-        max_attempts = 3
+        max_attempts = 5
         for attempt in range(1, max_attempts + 1):
             try:
                 response = requests.post(url, headers=headers, data=payload, timeout=8)
@@ -192,9 +192,9 @@ class LocketAPI:
 
                 if is_ingesting_or_rate_limited and attempt < max_attempts:
                     print(
-                        f"Lần thử {attempt}/{max_attempts} - RevenueCat đang xử lý/bận (Mã {response.status_code}). Đang thử lại sau 1.5s..."
+                        f"Lần thử {attempt}/{max_attempts} - RevenueCat đang xử lý/bận (Mã {response.status_code}). Đang thử lại sau 2s..."
                     )
-                    time.sleep(1.5)
+                    time.sleep(2)
                     continue
 
                 raise Exception(
@@ -204,7 +204,7 @@ class LocketAPI:
                 last_exception = e
                 if attempt < max_attempts:
                     print(f"Lần thử {attempt}/{max_attempts} đến RevenueCat bị timeout/lỗi mạng. Đang thử lại...")
-                    time.sleep(1.5)
+                    time.sleep(2)
                 else:
                     raise Exception(f"Máy chủ RevenueCat bị nghẽn mạng sau {max_attempts} lần thử: {str(e)}")
             except Exception as e:
